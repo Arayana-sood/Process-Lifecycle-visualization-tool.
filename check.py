@@ -1,1 +1,1 @@
-print("hello creators")
+print("hello")

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive Process Lifecycle Visualizer — Simulate CPU scheduling algorithms like FCFS, SJF, SRTF, Round Robin & Priority with animated Gantt charts and real-time state transitions." />
+  <title>ProcessViz — CPU Scheduling Visualizer</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ===== Canvas Background ===== -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- ===== Navigation ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <span class="logo-icon">⚙</span>
+        <span class="logo-text">Process<span class="logo-accent">Viz</span></span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#hero" class="nav-link active" data-section="hero">Home</a></li>
+        <li><a href="#about" class="nav-link" data-section="about">About</a></li>
+        <li><a href="#simulator" class="nav-link" data-section="simulator">Simulator</a></li>
+        <li><a href="#algorithms" class="nav-link" data-section="algorithms">Algorithms</a></li>
+        <li><a href="#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" title="Toggle Light/Dark Theme">🌙</button>
+        <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== Hero Section ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🚀 Interactive OS Simulator</div>
+      <h1 class="hero-title">
+        Visualize <span class="gradient-text">CPU Scheduling</span><br/>
+        Like Never Before
+      </h1>
+      <p class="hero-subtitle">
+        Explore FCFS, SJF, SRTF, Round Robin & Priority scheduling algorithms 
+        with real-time Gantt charts, animated state transitions, and instant performance metrics.
+      </p>
+      <div class="hero-buttons">
+        <a href="#simulator" class="btn btn-hero-primary">
+          <span>▶</span> Launch Simulator
+        </a>
+        <a href="#about" class="btn btn-hero-secondary">
+          Learn More ↓
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">5</div>
+          <div class="hero-stat-label">Algorithms</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">∞</div>
+          <div class="hero-stat-label">Processes</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">Live</div>
+          <div class="hero-stat-label">Animation</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">2</div>
+          <div class="hero-stat-label">Themes</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <span>Scroll to explore</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ===== About Section ===== -->
+  <section class="section" id="about">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-tag">About</span>
+        <h2 class="section-title">What is <span class="gradient-text">ProcessViz</span>?</h2>
+        <p class="section-subtitle">
+          A comprehensive, interactive tool to understand how operating systems manage processes on the CPU.
+        </p>
+      </div>
+      <div class="about-grid">
+        <div class="about-card" data-aos="fade-up">
+          <div class="about-icon">🔄</div>
+          <h3>State Transitions</h3>
+          <p>Watch processes flow through New → Ready → Running → Waiting → Terminated in real time.</p>
+        </div>
+        <div class="about-card" data-aos="fade-up">
+          <div class="about-icon">📊</div>
+          <h3>Gantt Charts</h3>
+          <p>Beautiful, animated Gantt chart visualization shows exactly when each process uses the CPU.</p>
+        </div>
+        <div class="about-card" data-aos="fade-up">
+          <div class="about-icon">⚡</div>
+          <h3>Real-Time Metrics</h3>
+          <p>Instantly see waiting time, turnaround time, throughput and per-process scheduling results.</p>
+        </div>
+        <div class="about-card" data-aos="fade-up">
+          <div class="about-icon">🎨</div>
+          <h3>Dual Themes</h3>
+          <p>Switch between elegant dark mode and clean light mode — your preference is saved automatically.</p>
+        </div>
+        <div class="about-card" data-aos="fade-up">
+          <div class="about-icon">🎛️</div>
+          <h3>Full Control</h3>
+          <p>Add unlimited processes, configure arrival times, burst times, priorities, and animation speed.</p>
+        </div>
+        <div class="about-card" data-aos="fade-up">
+          <div class="about-icon">💻</div>
+          <h3>C Backend</h3>
+          <p>Includes a standalone C program for terminal-based simulation — perfect for academic submissions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Simulator Section ===== -->
+  <section class="section section-simulator" id="simulator">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-tag">Simulator</span>
+        <h2 class="section-title">Run the <span class="gradient-text">Simulation</span></h2>
+        <p class="section-subtitle">Configure processes, choose an algorithm, and watch the magic happen.</p>
+      </div>
+
+      <!-- Controls Card -->
+      <div class="card glass-card">
+        <div class="card-title"><span class="icon">🎛</span> Configuration</div>
+        <div class="controls-grid">
+          <!-- Left: Add Processes -->
+          <div class="input-section">
+            <div class="input-row">
+              <label>PID</label>
+              <input type="number" id="inp-pid" placeholder="Auto" min="1" />
+            </div>
+            <div class="input-row">
+              <label>Arrival</label>
+              <input type="number" id="inp-arrival" placeholder="0" min="0" value="0" />
+            </div>
+            <div class="input-row">
+              <label>Burst</label>
+              <input type="number" id="inp-burst" placeholder="4" min="1" value="4" />
+            </div>
+            <div class="input-row">
+              <label>Priority</label>
+              <input type="number" id="inp-priority" placeholder="1 (lower=higher)" min="1" value="1" />
+            </div>
+            <button class="btn btn-add" id="btn-add">＋ Add Process</button>
+            <div class="process-chips" id="process-chips"></div>
+          </div>
+
+          <!-- Right: Algorithm + Actions -->
+          <div class="input-section">
+            <div class="input-row">
+              <label>Algorithm</label>
+              <select id="algo-select">
+                <option value="fcfs">FCFS</option>
+                <option value="sjf">SJF (Non-Preemptive)</option>
+                <option value="srtf">SRTF (Preemptive)</option>
+                <option value="rr">Round Robin</option>
+                <option value="priority">Priority (Non-Preemptive)</option>
+              </select>
+            </div>
+            <div class="input-row" id="quantum-row">
+              <label>Quantum</label>
+              <input type="number" id="inp-quantum" value="2" min="1" />
+            </div>
+            <div class="speed-control">
+              <label>Speed</label>
+              <input type="range" id="speed-slider" min="100" max="1500" value="600" step="100" />
+              <span class="speed-val" id="speed-val">600ms</span>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-start" id="btn-start">▶ Start</button>
+              <button class="btn btn-reset" id="btn-reset">↺ Reset</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- State Diagram -->
+      <div class="card glass-card">
+        <div class="card-title"><span class="icon">🔄</span> Process State Diagram</div>
+        <div class="state-diagram" id="state-diagram">
+          <div class="state-box state-new" id="box-new">
+            <span class="state-label">New</span>
+            <span class="state-dot"></span>
+          </div>
+          <span class="arrow">
+            <svg width="32" height="12" viewBox="0 0 32 12"><path d="M0 6h28l-4-4M28 6l-4 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <div class="state-box state-ready" id="box-ready">
+            <span class="state-label">Ready</span>
+            <span class="state-dot"></span>
+          </div>
+          <span class="arrow">
+            <svg width="32" height="12" viewBox="0 0 32 12"><path d="M0 6h28l-4-4M28 6l-4 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <div class="state-box state-running" id="box-running">
+            <span class="state-label">Running</span>
+            <span class="state-dot"></span>
+          </div>
+          <span class="arrow">
+            <svg width="32" height="12" viewBox="0 0 32 12"><path d="M0 6h28l-4-4M28 6l-4 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <div class="state-box state-waiting" id="box-waiting">
+            <span class="state-label">Waiting</span>
+            <span class="state-dot"></span>
+          </div>
+          <span class="arrow">
+            <svg width="32" height="12" viewBox="0 0 32 12"><path d="M0 6h28l-4-4M28 6l-4 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <div class="state-box state-terminated" id="box-terminated">
+            <span class="state-label">Terminated</span>
+            <span class="state-dot"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Process Table + Log side by side -->
+      <div class="grid-2">
+        <div class="card glass-card">
+          <div class="card-title"><span class="icon">📋</span> Process Table</div>
+          <div class="table-wrapper">
+            <table class="data-table" id="process-table">
+              <thead>
+                <tr><th>PID</th><th>Arrival</th><th>Burst</th><th>Priority</th><th>State</th></tr>
+              </thead>
+              <tbody id="table-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card glass-card">
+          <div class="card-title"><span class="icon">📜</span> Transition Log</div>
+          <div class="log-box" id="log-box">
+            <div class="log-entry" style="color:#4b5563;">Add processes and click Start...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gantt Chart -->
+      <div class="card glass-card" id="gantt-section" style="display:none;">
+        <div class="card-title"><span class="icon">📊</span> Gantt Chart</div>
+        <div class="gantt-wrapper">
+          <div class="gantt-chart" id="gantt-chart"></div>
+          <div class="gantt-timeline" id="gantt-timeline"></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="card glass-card" id="stats-section" style="display:none;">
+        <div class="card-title"><span class="icon">📈</span> Scheduling Results</div>
+        <div class="stats-grid" id="stats-summary"></div>
+        <div class="table-wrapper">
+          <table class="data-table" id="stats-table" style="margin-top:16px;">
+            <thead>
+              <tr><th>PID</th><th>Arrival</th><th>Burst</th><th>Completion</th><th>Waiting</th><th>Turnaround</th></tr>
+            </thead>
+            <tbody id="stats-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Algorithms Section ===== -->
+  <section class="section" id="algorithms">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-tag">Algorithms</span>
+        <h2 class="section-title">Scheduling <span class="gradient-text">Algorithms</span></h2>
+        <p class="section-subtitle">Compare and contrast five fundamental CPU scheduling strategies.</p>
+      </div>
+      <div class="algo-grid">
+        <div class="algo-card">
+          <div class="algo-number">01</div>
+          <h3>FCFS</h3>
+          <p class="algo-full">First Come First Serve</p>
+          <p>Processes execute in <strong>order of arrival</strong>. Simple and fair, but may cause the convoy effect where short processes wait behind long ones.</p>
+          <div class="algo-tags">
+            <span class="algo-tag">Non-Preemptive</span>
+            <span class="algo-tag">FIFO Queue</span>
+          </div>
+        </div>
+        <div class="algo-card">
+          <div class="algo-number">02</div>
+          <h3>SJF</h3>
+          <p class="algo-full">Shortest Job First</p>
+          <p>Selects the process with the <strong>shortest burst time</strong>. Optimal for minimizing average waiting time but requires knowing burst times in advance.</p>
+          <div class="algo-tags">
+            <span class="algo-tag">Non-Preemptive</span>
+            <span class="algo-tag">Optimal WT</span>
+          </div>
+        </div>
+        <div class="algo-card">
+          <div class="algo-number">03</div>
+          <h3>SRTF</h3>
+          <p class="algo-full">Shortest Remaining Time First</p>
+          <p>Preemptive SJF — a new arrival with <strong>shorter remaining time</strong> can interrupt the running process. Gives lowest average waiting time.</p>
+          <div class="algo-tags">
+            <span class="algo-tag">Preemptive</span>
+            <span class="algo-tag">Context Switches</span>
+          </div>
+        </div>
+        <div class="algo-card">
+          <div class="algo-number">04</div>
+          <h3>Round Robin</h3>
+          <p class="algo-full">Time-Quantum Based</p>
+          <p>Each process gets a fixed <strong>time quantum</strong>. If not finished, it goes to the back of the queue. Fair and ideal for time-sharing systems.</p>
+          <div class="algo-tags">
+            <span class="algo-tag">Preemptive</span>
+            <span class="algo-tag">Fair Sharing</span>
+          </div>
+        </div>
+        <div class="algo-card">
+          <div class="algo-number">05</div>
+          <h3>Priority</h3>
+          <p class="algo-full">Priority-Based Scheduling</p>
+          <p>Processes with <strong>higher priority</strong> (lower number) execute first. Can cause starvation of low-priority processes without aging.</p>
+          <div class="algo-tags">
+            <span class="algo-tag">Non-Preemptive</span>
+            <span class="algo-tag">Starvation Risk</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== How It Works Section ===== -->
+  <section class="section" id="how-it-works">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-tag">Guide</span>
+        <h2 class="section-title">How It <span class="gradient-text">Works</span></h2>
+        <p class="section-subtitle">Get started in 4 simple steps.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Add Processes</h3>
+            <p>Enter arrival time, burst time, and priority for each process. Click "Add Process" to queue them up. Pre-loaded samples included!</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Choose Algorithm</h3>
+            <p>Select from FCFS, SJF, SRTF, Round Robin, or Priority scheduling. Adjust quantum for Round Robin.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Hit Start</h3>
+            <p>Watch the simulation unfold with animated state transitions, a live transition log, and a Gantt chart building in real-time.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Analyze Results</h3>
+            <p>Review average waiting time, turnaround time, throughput, and per-process metrics in the results panel.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="nav-logo">
+            <span class="logo-icon">⚙</span>
+            <span class="logo-text">Process<span class="logo-accent">Viz</span></span>
+          </a>
+          <p>Interactive CPU scheduling visualization tool built for Operating Systems coursework.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#simulator">Simulator</a></li>
+            <li><a href="#algorithms">Algorithms</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Technologies</h4>
+          <ul>
+            <li>HTML5 & CSS3</li>
+            <li>Vanilla JavaScript</li>
+            <li>C Programming</li>
+            <li>Canvas API</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Algorithms</h4>
+          <ul>
+            <li>FCFS</li>
+            <li>SJF / SRTF</li>
+            <li>Round Robin</li>
+            <li>Priority</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 ProcessViz — Built for Operating Systems coursework</p>
+        <p>Made with ❤️ using HTML, CSS & JavaScript</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
